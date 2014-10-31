@@ -1,4 +1,4 @@
-package tweaking.strategyPattern;
+package tweaking.strategyPattern.example1;
 
 public class Context {
 
