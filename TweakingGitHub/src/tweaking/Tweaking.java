@@ -2,28 +2,60 @@ package tweaking;
 
 public class Tweaking {
 
-    public static void main(String[] args) {
-
-//        final String sourceBicPath = "1.2.3.4 7/8/9";
-//        final String deviceIp = StringUtils.split(sourceBicPath, ' ')[0];
-//        final String[] bicPathComponents = StringUtils.split(sourceBicPath.substring(sourceBicPath.lastIndexOf(' ') + 1), '/');
-//
-//        final int shelfIdx = Integer.parseInt(bicPathComponents[0]);
-//        final int slotIdx = Integer.parseInt(bicPathComponents[1]);
-//        final int bicIdx = Integer.parseInt(bicPathComponents[2]);
-//        
-//        System.out.println("deviceIp = " + deviceIp);
-//        System.out.println("shelf = " + shelfIdx);
-//        System.out.println("slot = " + slotIdx);
-//        System.out.println("bic = " + bicIdx);
-        final String out = generateDolMuxPort("md:0/99", "L1");
-        System.out.println("out = " + out);
+    public static void main(final String[] args) {
+        final String in = "wpsport:1/2/L4A";
+        final ProtectionSwitchEntity p = new ProtectionSwitchEntity(in);
+        System.out.println("p.getShelfIdx = " + p.getShelfIdx());
+        System.out.println("p.getSlotIdx = " + p.getSlotIdx());
+        System.out.println("p.getPortIdx = " + p.getId());
+        System.out.println("p.toString = " + p.toString());
         
+        final String group = "wpsgroup:1/2/4";
+        final ProtectionSwitchEntity g = new ProtectionSwitchEntity(group);
+        System.out.println("g.getShelfIdx = " + g.getShelfIdx());
+        System.out.println("g.getSlotIdx = " + g.getSlotIdx());
+        System.out.println("g.getPortIdx = " + g.getId());
+        System.out.println("g.toString = " + g.toString());
+        
+        final String portId = "L3B";
+        System.out.println("out = " + portId.substring(1, 2));
     }
     
-    private static String generateDolMuxPort(final String muxEquipment, final String muxPort) {
-        final String santitizedEquipment = muxEquipment.substring(muxEquipment.indexOf(':'));
-        return "port" + santitizedEquipment + "/0/" + muxPort;
+
+    private static class ProtectionSwitchEntity {
+
+        private final int shelfIdx;
+        private final int slotIdx;
+        private final String id;
+
+        public ProtectionSwitchEntity(final String fullPortName) {
+            final String fullId = extractFullId(fullPortName);
+            this.shelfIdx = Integer.parseInt(fullId.substring(0, fullId.indexOf('/')));
+            this.slotIdx = Integer.parseInt(fullId.substring(fullId.indexOf('/') + 1, fullId.lastIndexOf('/')));
+            this.id = fullId.substring(fullId.lastIndexOf('/') + 1);
+        }
+        
+        private static String extractFullId(final String fullName) {
+            return fullName.substring(fullName.indexOf(':') + 1);
+        }
+
+        public int getShelfIdx() {
+            return shelfIdx;
+        }
+
+        public int getSlotIdx() {
+            return slotIdx;
+        }
+
+        public String getId() {
+            return id;
+        }
+        
+        @Override
+        public String toString() {
+            return String.format("%d/%d/%s", shelfIdx, slotIdx, id);
+        }
+
     }
 
 }
